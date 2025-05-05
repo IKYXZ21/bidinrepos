@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portofolio Ikyxz</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    html, body {
+      height: 100%;
+      overflow-x: hidden;
+      background: linear-gradient(135deg, #000000, #0f2027);
+      color: white;
+      scroll-behavior: smooth;
+    }
+
+    #login, #loading {
+      display: none;
+      height: 100vh;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      background: #111;
+      border: 2px solid #00f0ff;
+      border-radius: 10px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      background: #00f0ff;
+      color: #000;
+    }
+
+    .cube {
+      width: 60px;
+      height: 60px;
+      background: #00f0ff;
+      animation: rotateCube 1.2s infinite linear;
+      transform-style: preserve-3d;
+    }
+
+    @keyframes rotateCube {
+      0% { transform: rotate3d(1, 1, 0, 0deg); }
+      100% { transform: rotate3d(1, 1, 0, 360deg); }
+    }
+
+    #portfolio {
+      display: none;
+      padding: 80px 20px;
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    .section {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 25px;
+      margin: 30px 0;
+      box-shadow: 0 12px 40px rgba(0,255,255,0.2);
+      transition: transform 0.4s, background 0.3s;
+      backdrop-filter: blur(10px);
+    }
+
+    .section:hover {
+      transform: scale(1.03);
+      background: rgba(0, 255, 255, 0.07);
+    }
+
+    .profile-pic {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 0 30px #00f0ff;
+      margin-bottom: 15px;
+    }
+
+    .centered {
+      text-align: center;
+    }
+
+    .tictactoe {
+      display: grid;
+      grid-template-columns: repeat(3, 70px);
+      gap: 12px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .cell {
+      width: 70px;
+      height: 70px;
+      background: #222;
+      color: white;
+      font-size: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .cell:hover {
+      background: #00f0ff44;
+    }
+
+    h2 {
+      color: #00f0ff;
+      margin-bottom: 10px;
+    }
+
+    #status {
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    #backToTop {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #00f0ff;
+      color: black;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: none;
+      z-index: 999;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+
+<div id="login" class="centered">
+  <h2>🔐 Login Page</h2>
+  <input type="text" id="username" placeholder="Username" class="btn" style="margin: 10px;" />
+  <button class="btn" onclick="checkLogin()">Masuk</button>
+</div>
+
+<div id="loading" class="centered">
+  <h2>🚀 Loading...</h2>
+  <div class="cube"></div>
+</div>
+
+<div id="portfolio">
+  <div class="section centered">
+    <img src="bidin.jpg" alt="Foto Profil" class="profile-pic" />
+    <h2>👤 Profile</h2>
+    <p><strong>Nama:</strong> bidin imut kartell😱</p>
+    <p><strong>Deskripsi:</strong> saya bidin suka ngock dan ngoding</p>
+  </div>
+
+  <div class="section centered">
+    <h2>📸 Idolaku</h2>
+    <img src="warik.jpg" alt="Elon Musk" class="profile-pic" />
+    <p>warik hutan rimba</p>
+  </div>
+
+  <div class="section">
+    <h2>🔥 Motivasi</h2>
+    <p>"ngock lah terus hingga jadi pemain b*kep, bidin nih bos setel musiknya dungss"</p>
+  </div>
+
+  <div class="section">
+    <h2>🎮 Tic Tac Toe vs robot bidin</h2>
+    <div class="tictactoe" id="board"></div>
+    <p id="status"></p>
+    <div class="centered">
+      <button class="btn" onclick="initGame()">🔄 Reset Game</button>
+    </div>
+  </div>
+</div>
+
+<button id="backToTop" onclick="scrollToTop()">⬆ Atas</button>
+
+<script>
+  const canvas = document.getElementById("stars");
+  const ctx = canvas.getContext("2d");
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const stars = Array(100).fill().map(() => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: Math.random() * 1.5,
+    d: Math.random() * 1
+  }));
+
+  function drawStars() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#00f0ff";
+    stars.forEach(star => {
+      ctx.beginPath();
+      ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  }
+
+  function animateStars() {
+    stars.forEach(star => {
+      star.y += star.d;
+      if (star.y > canvas.height) star.y = 0;
+    });
+    drawStars();
+    requestAnimationFrame(animateStars);
+  }
+
+  animateStars();
+
+  window.onscroll = () => {
+    document.getElementById("backToTop").style.display = window.scrollY > 300 ? 'block' : 'none';
+  };
+
+  function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  document.getElementById("login").style.display = "flex";
+
+  function checkLogin() {
+    const user = document.getElementById("username").value;
+    if (user === "bidin1") {
+      document.getElementById("login").style.display = "none";
+      document.getElementById("loading").style.display = "flex";
+      setTimeout(() => {
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("portfolio").style.display = "block";
+        initGame();
+      }, 2500);
+    } else {
+      alert("Username salah!");
+    }
+  }
+
+  function initGame() {
+    const board = document.getElementById("board");
+    board.innerHTML = '';
+    const cells = Array(9).fill(null);
+    let currentPlayer = "X";
+
+    function aiMove() {
+      let bestScore = -Infinity;
+      let move;
+      for (let i = 0; i < 9; i++) {
+        if (cells[i] === null) {
+          cells[i] = "O";
+          let score = minimax(cells, 0, false);
+          cells[i] = null;
+          if (score > bestScore) {
+            bestScore = score;
+            move = i;
+          }
+        }
+      }
+      if (move !== undefined) {
+        cells[move] = "O";
+        render();
+        checkWinner();
+      }
+    }
+
+    function minimax(board, depth, isMaximizing) {
+      const result = evaluate(board);
+      if (result !== null) return result;
+
+      if (isMaximizing) {
+        let best = -Infinity;
+        for (let i = 0; i < 9; i++) {
+          if (board[i] === null) {
+            board[i] = "O";
+            let score = minimax(board, depth + 1, false);
+            board[i] = null;
+            best = Math.max(score, best);
+          }
+        }
+        return best;
+      } else {
+        let best = Infinity;
+        for (let i = 0; i < 9; i++) {
+          if (board[i] === null) {
+            board[i] = "X";
+            let score = minimax(board, depth + 1, true);
+            board[i] = null;
+            best = Math.min(score, best);
+          }
+        }
+        return best;
+      }
+    }
+
+    function evaluate(board) {
+      const winPatterns = [
+        [0,1,2],[3,4,5],[6,7,8],
+        [0,3,6],[1,4,7],[2,5,8],
+        [0,4,8],[2,4,6]
+      ];
+      for (const [a,b,c] of winPatterns) {
+        if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+          return board[a] === "O" ? 1 : -1;
+        }
+      }
+      if (!board.includes(null)) return 0;
+      return null;
+    }
+
+    function handleClick(i) {
+      if (cells[i] || checkWinner()) return;
+      cells[i] = "X";
+      render();
+      if (!checkWinner()) setTimeout(aiMove, 400);
+    }
+
+    function render() {
+      board.innerHTML = '';
+      cells.forEach((cell, i) => {
+        const div = document.createElement("div");
+        div.className = "cell";
+        div.textContent = cell || '';
+        div.onclick = () => handleClick(i);
+        board.appendChild(div);
+      });
+    }
+
+    function checkWinner() {
+      const winPatterns = [
+        [0,1,2],[3,4,5],[6,7,8],
+        [0,3,6],[1,4,7],[2,5,8],
+        [0,4,8],[2,4,6]
+      ];
+      for (const [a,b,c] of winPatterns) {
+        if (cells[a] && cells[a] === cells[b] && cells[a] === cells[c]) {
+          document.getElementById("status").textContent = `${cells[a]} menang!`;
+          return true;
+        }
+      }
+      if (!cells.includes(null)) {
+        document.getElementById("status").textContent = `Seri!`;
+        return true;
+      }
+      document.getElementById("status").textContent = '';
+      return false;
+    }
+
+    render();
+  }
+</script>
+</body>
+</html>
